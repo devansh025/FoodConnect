@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +13,7 @@ import Browse from "./pages/Browse";
 import About from "./pages/About";
 import SignUp from "./pages/SignUp";
 import Login from "./pages/Login";
+import NewDonation from "./pages/NewDonation";
 import RestaurantDashboard from "./pages/RestaurantDashboard";
 import NgoDashboard from "./pages/NgoDashboard";
 import FoodDetail from "./pages/FoodDetail";
@@ -47,6 +47,7 @@ const App = () => {
                 <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
                 <Route path="/ngo/dashboard" element={<NgoDashboard />} />
                 <Route path="/food/:id" element={<FoodDetail />} />
+                <Route path="/NewDonation" element={<NewDonation />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>

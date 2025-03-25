@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { AtSign, Lock, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth } from "../firebase.js";
 
 const Login = () => {
   const [email, setEmail] = useState("");
