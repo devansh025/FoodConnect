@@ -87,6 +87,7 @@ const Navbar = () => {
 
           {user ? (
             <Button onClick={handleLogout} variant="outline" className="text-sm">Logout</Button>
+            <Button onClick={handleLogout} className="text-sm bg-connect-green-500 text-white hover:bg-connect-green-600">Logout</Button>
           ) : (
             <>
               <Button asChild variant="outline" className="text-sm">
@@ -122,7 +123,7 @@ const Navbar = () => {
             </Link>
           )}
           {user ? (
-            <Button onClick={handleLogout} variant="outline" className="w-full">Logout</Button>
+            <Button onClick={handleLogout} className="w-full bg-connect-green-500 text-white hover:bg-connect-green-600">Logout</Button>
           ) : (
             <>
               <Button asChild variant="outline" className="w-full">
