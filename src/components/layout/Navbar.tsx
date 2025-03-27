@@ -25,15 +25,10 @@ const Navbar = () => {
     onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        const ngoDoc = await getDoc(doc(db, "ngos", currentUser.uid));
-        const restaurantDoc = await getDoc(doc(db, "restaurants", currentUser.uid));
-
-        if (ngoDoc.exists()) {
-          setUserType("ngo");
-        } else if (restaurantDoc.exists()) {
-          setUserType("restaurant");
-        } else {
-          setUserType(null);
+        const userRef = doc(db, "users", currentUser.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          setUserType(userDoc.data().userType);
         }
       }
     });
@@ -56,7 +51,13 @@ const Navbar = () => {
     { name: "About Us", path: "/about" },
   ];
 
-  const dashboardPath = userType === "ngo" ? "/pages/NgoDashboard" : userType === "restaurant" ? "/pages/RestaurantDashboard" : "/";
+  const handleDashboardRedirect = () => {
+    if (userType === "ngo") {
+      navigate("/pages/NgoDashboard");
+    } else if (userType === "restaurant") {
+      navigate("/pages/RestaurantDashboard");
+    }
+  };
 
   return (
     <nav className={cn(
@@ -80,13 +81,12 @@ const Navbar = () => {
           ))}
 
           {user && userType && (
-            <Link to={dashboardPath} className="px-4 py-2 rounded-md text-sm font-medium text-connect-green-500 hover:bg-connect-green-50/50">
+            <Button onClick={handleDashboardRedirect} className="px-4 py-2 rounded-md text-sm font-medium text-connect-green-500 hover:bg-connect-green-50/50">
               Dashboard
-            </Link>
+            </Button>
           )}
 
           {user ? (
-            <Button onClick={handleLogout} variant="outline" className="text-sm">Logout</Button>
             <Button onClick={handleLogout} className="text-sm bg-connect-green-500 text-white hover:bg-connect-green-600">Logout</Button>
           ) : (
             <>
@@ -108,36 +108,10 @@ const Navbar = () => {
           {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
       </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-white shadow-lg p-4 space-y-4">
-          {navLinks.map(link => (
-            <Link key={link.path} to={link.path} className="block" onClick={() => setIsMobileMenuOpen(false)}>
-              {link.name}
-            </Link>
-          ))}
-          {user && userType && (
-            <Link to={dashboardPath} className="block text-connect-green-500" onClick={() => setIsMobileMenuOpen(false)}>
-              Dashboard
-            </Link>
-          )}
-          {user ? (
-            <Button onClick={handleLogout} className="w-full bg-connect-green-500 text-white hover:bg-connect-green-600">Logout</Button>
-          ) : (
-            <>
-              <Button asChild variant="outline" className="w-full">
-                <Link to="/login">Log In</Link>
-              </Button>
-              <Button asChild className="w-full bg-connect-green-500 hover:bg-connect-green-600">
-                <Link to="/signup">Sign Up</Link>
-              </Button>
-            </>
-          )}
-        </div>
-      )}
     </nav>
   );
 };
 
 export default Navbar;
+
+
