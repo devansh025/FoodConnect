@@ -1,4 +1,4 @@
-import { db } from './firebase.js';
+import { db } from './firebase.ts';
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
