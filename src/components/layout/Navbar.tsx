@@ -22,7 +22,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
 
       if (currentUser) {
@@ -46,14 +46,19 @@ const Navbar = () => {
         }
       } else {
         console.log("❌ No authenticated user.");
+        setUserType(null);
       }
     });
 
     setIsMobileMenuOpen(false);
+
+    return () => unsubscribe();
   }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
+      setUser(null);  // Clear user immediately
+      setUserType(null);  // Clear userType immediately
       await signOut(auth);
       navigate("/login");
     } catch (error) {
