@@ -1,35 +1,38 @@
 
-
 // import { useState, useEffect } from "react";
 // import { collection, onSnapshot, query } from "firebase/firestore";
-// import { db } from "@/firebase"; // ✅ Ensure correct Firebase import
+// import { db } from "@/firebase";
+// import { auth } from "@/firebase"; // Ensure Firebase auth is imported
 // import FoodCard, { FoodItem } from "@/components/food/FoodCard";
 
 // const Browse = () => {
 //   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
 //   const [loading, setLoading] = useState(true);
+//   const user = auth.currentUser; // Get the logged-in user
 
 //   useEffect(() => {
-//     // ✅ Firestore real-time listener for food donations
-//     const foodCollection = collection(db, "food_donations");
-//     const q = query(foodCollection); // Modify query if filtering is needed
+//     if (!user) return; // Prevent execution if user is not logged in
+
+//     // ✅ Access the restaurant's food donations subcollection dynamically
+//     const foodCollection = collection(db, `restaurants/${user.uid}/food_donations`);
+//     const q = query(foodCollection);
 
 //     const unsubscribe = onSnapshot(q, (snapshot) => {
 //       const updatedFood = snapshot.docs.map((doc) => ({
 //         id: doc.id,
-//         ...(doc.data() as FoodItem), // Explicitly type doc.data()
+//         ...(doc.data() as FoodItem),
 //       }));
 
 //       setFoodItems(updatedFood);
 //       setLoading(false);
 //     });
 
-//     return () => unsubscribe(); // Cleanup listener when component unmounts
-//   }, []);
+//     return () => unsubscribe();
+//   }, [user]); // Rerun effect when user changes
 
 //   return (
 //     <div className="p-6">
-//       <h2 className="text-2xl font-bold mb-4">Available Food Donations</h2>
+//       <h2 className="text-2xl font-bold mb-4">Your Food Donations</h2>
 //       {loading ? (
 //         <p>Loading food items...</p>
 //       ) : foodItems.length === 0 ? (
@@ -48,24 +51,19 @@
 // export default Browse;
 
 import { useState, useEffect } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import { collectionGroup, onSnapshot } from "firebase/firestore";
 import { db } from "@/firebase";
-import { auth } from "@/firebase"; // Ensure Firebase auth is imported
 import FoodCard, { FoodItem } from "@/components/food/FoodCard";
 
 const Browse = () => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const user = auth.currentUser; // Get the logged-in user
 
   useEffect(() => {
-    if (!user) return; // Prevent execution if user is not logged in
+    // ✅ Fetch food donations from all restaurants using collectionGroup
+    const foodCollection = collectionGroup(db, "food_donations");
 
-    // ✅ Access the restaurant's food donations subcollection dynamically
-    const foodCollection = collection(db, `restaurants/${user.uid}/food_donations`);
-    const q = query(foodCollection);
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+    const unsubscribe = onSnapshot(foodCollection, (snapshot) => {
       const updatedFood = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...(doc.data() as FoodItem),
@@ -76,11 +74,11 @@ const Browse = () => {
     });
 
     return () => unsubscribe();
-  }, [user]); // Rerun effect when user changes
+  }, []); // No dependency on user, fetches all food items
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Your Food Donations</h2>
+      <h2 className="text-2xl font-bold mb-4">Available Food Donations</h2>
       {loading ? (
         <p>Loading food items...</p>
       ) : foodItems.length === 0 ? (
