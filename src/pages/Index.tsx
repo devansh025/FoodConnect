@@ -1,10 +1,40 @@
-
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UtensilsCrossed, Building, Heart, ArrowRight, CheckCircle } from "lucide-react";
+import { db } from "@/firebase"; // Make sure the path is correct
+import { collectionGroup, getDocs } from "firebase/firestore";
 
-const HomePage = () => {
+// Define TypeScript interface for FoodDonation data
+interface FoodDonation {
+  id: string;
+  foodItem: string;
+  quantity: string;
+  expiry: string;
+  restaurants: string;
+}
+
+const HomePage: React.FC = () => {
+  const [foodDonations, setFoodDonations] = useState<FoodDonation[]>([]);
+
+  useEffect(() => {
+    const fetchFoodDonations = async () => {
+      try {
+        const foodCollection = collectionGroup(db, "food_donations");
+        const foodSnapshot = await getDocs(foodCollection);
+        const foodList = foodSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as FoodDonation[];
+        setFoodDonations(foodList);
+      } catch (error) {
+        console.error("Error fetching food donations: ", error);
+      }
+    };
+
+    fetchFoodDonations();
+  }, []);
   return (
     <div className="w-full overflow-hidden">
       {/* Hero Section */}
@@ -74,8 +104,37 @@ const HomePage = () => {
                 <div className="relative glass-panel rounded-2xl overflow-hidden shadow-xl">
                   <div className="p-8">
                     <h3 className="text-xl font-semibold mb-4">Recently Added</h3>
-                    
                     <div className="space-y-4">
+                  {foodDonations.length > 0 ? (
+                    foodDonations.slice(0, 3).map((item, i) => (
+                      <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.7 + i * 0.1 }}
+                        className="flex items-start p-4 rounded-lg bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-md transition-shadow duration-300"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{item.foodItem}</p> {/* Display Food Name */}
+                          <p className="text-xs text-muted-foreground">{item.restaurants}</p>
+                          <div className="mt-1 flex items-center space-x-2">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-connect-green-100 text-connect-green-800">
+                              {item.quantity} servings
+                            </span>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              Expires: {item.expiry}
+                            </span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No food available right now.</p>
+                  )}
+                </div>
+
+
+                    {/* <div className="space-y-4">
                       {[
                         {
                           name: "Fresh Pasta & Salad",
@@ -117,7 +176,7 @@ const HomePage = () => {
                           </div>
                         </motion.div>
                       ))}
-                    </div>
+                    </div> */}
                     
                     <div className="mt-6 text-center">
                       <Button asChild variant="outline" size="sm" className="rounded-full">
@@ -310,3 +369,5 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+
