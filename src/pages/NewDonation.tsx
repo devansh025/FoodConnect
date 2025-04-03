@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/firebase";
 import { getAuth } from "firebase/auth";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 
 const NewDonation = () => {
   const navigate = useNavigate();
@@ -46,14 +46,21 @@ const NewDonation = () => {
 
     setLoading(true);
 
+    const restaurantId = auth.currentUser.uid; // Get the logged-in restaurant's ID
+
+    // 🆕 Generate a custom document ID
+    const donationId = `donation_${formData.foodItem.replace(/\s+/g, "_")}_${Date.now()}`;
+
     const donationData = {
       ...formData,
-      restaurant_id: auth.currentUser.uid,
+      restaurant_id: restaurantId,
       createdAt: serverTimestamp(),
     };
 
     try {
-      await addDoc(collection(db, "food_donations"), donationData);
+      // ✅ Store donation inside the restaurant's document under 'food_donations' subcollection with custom ID
+      await setDoc(doc(db, "restaurants", restaurantId, "food_donations", donationId), donationData);
+
       alert("Donation added successfully!");
       navigate("/restaurant/dashboard");
     } catch (err) {
