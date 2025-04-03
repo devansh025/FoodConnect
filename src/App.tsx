@@ -37,18 +37,19 @@ const App = () => {
         <BrowserRouter>
           <AnimatePresence mode="wait">
             <MainLayout>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/how-it-works" element={<HowItWorks />} />
-                <Route path="/browse" element={<Browse />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/signup" element={<SignUp />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
-                <Route path="/ngo/dashboard" element={<NgoDashboard />} />
-                <Route path="/food/:restaurantId/:foodId" element={<FoodDetail />} />
-                <Route path="/NewDonation" element={<NewDonation />} />
-                <Route path="*" element={<NotFound />} />
+            <Routes>
+             <Route path="/" element={<HomePage />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/browse" element={<Browse />} />
+              <Route path="/about" element={<About />} />
+              <Route path= "/signup" element={<SignUp />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/restaurant/dashboard" element={<RestaurantDashboard />} />
+              <Route path="/ngo/dashboard" element={<NgoDashboard />} />
+              <Route path="/food/:restaurantId/:foodId" element={<FoodDetail />} />  {/* For restaurants */}
+              <Route path="/food/:foodId" element={<FoodDetail />} />  {/* For NGOs */}
+              <Route path="/NewDonation" element={<NewDonation />} />
+              <Route path="*" element={<NotFound />} />
               </Routes>
             </MainLayout>
           </AnimatePresence>

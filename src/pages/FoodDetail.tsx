@@ -1,118 +1,28 @@
 
-// import { useEffect, useState } from "react";
-// import { useParams } from "react-router-dom";
-// import { doc, getDoc } from "firebase/firestore";
-// import { db } from "../firebase";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Clock, MapPin, Utensils } from "lucide-react";
-// import { Button } from "@/components/ui/button";
 
-// const FoodDetails = () => {
-//   const { restaurantId, foodId } = useParams();
-//   const [foodDetails, setFoodDetails] = useState(null);
-//   const [restaurantDetails, setRestaurantDetails] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchFoodDetails = async () => {
-//       if (!restaurantId || !foodId) {
-//         console.error("Invalid URL parameters!");
-//         setLoading(false);
-//         return;
-//       }
-
-//       try {
-//         // Fetch food donation details
-//         const foodDocRef = doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`);
-//         const foodDocSnap = await getDoc(foodDocRef);
-
-//         if (foodDocSnap.exists()) {
-//           const foodData = foodDocSnap.data();
-//           setFoodDetails(foodData);
-
-//           // Fetch restaurant details
-//           const restaurantDocRef = doc(db, `restaurants/${restaurantId}`);
-//           const restaurantDocSnap = await getDoc(restaurantDocRef);
-
-//           if (restaurantDocSnap.exists()) {
-//             setRestaurantDetails(restaurantDocSnap.data());
-//           }
-//         } else {
-//           console.error("Food item not found");
-//         }
-//       } catch (error) {
-//         console.error("Error fetching data: ", error);
-//       }
-//       setLoading(false);
-//     };
-
-//     fetchFoodDetails();
-//   }, [restaurantId, foodId]);
-
-//   if (loading) {
-//     return <div className="flex justify-center items-center h-screen">Loading...</div>;
-//   }
-
-//   if (!foodDetails || !restaurantDetails) {
-//     return <div className="text-center text-red-500">Food details not found.</div>;
-//   }
-
-//   return (
-//     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-//       <Card>
-//         <CardContent>
-//           <h2 className="text-2xl font-bold mb-2">{foodDetails.foodItem}</h2>
-//           <p className="text-gray-600">{foodDetails.description}</p>
-
-//           <div className="mt-4 space-y-2">
-//             <div className="flex items-center">
-//               <Utensils className="h-5 w-5 mr-2 text-muted-foreground" />
-//               <span>{foodDetails.quantity}</span>
-//             </div>
-//             <div className="flex items-center">
-//               <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-//               <span>Expires: {foodDetails.expiry} hours</span>
-//             </div>
-//             <div className="flex items-center">
-//               <MapPin className="h-5 w-5 mr-2 text-muted-foreground" />
-//               <span>{foodDetails.location}</span>
-//             </div>
-//           </div>
-
-//           <hr className="my-4" />
-
-//           <h3 className="text-xl font-semibold">Pickup Information</h3>
-//           <p><strong>Restaurant:</strong> {restaurantDetails.name}</p>
-//           <p><strong>Address:</strong> {restaurantDetails.address}</p>
-//           <p><strong>Contact Person:</strong> {restaurantDetails.contactPerson}</p>
-//           <p><strong>Phone:</strong> {restaurantDetails.phone}</p>
-//         </CardContent>
-//       </Card>
-//       <Button className="mt-6 bg-connect-green-500 hover:bg-connect-green-600">Reserve Now</Button>
-//     </div>
-//   );
-// };
-
-// export default FoodDetails;
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Clock, MapPin, Utensils, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FoodDetails = () => {
   const { restaurantId, foodId } = useParams();
   const [foodDetails, setFoodDetails] = useState(null);
   const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const auth = getAuth();
 
   useEffect(() => {
     const fetchFoodDetails = async () => {
-      if (!restaurantId || !foodId) {
-        console.error("Invalid URL parameters!");
+      if (!foodId) {
+        console.error("❌ Invalid URL parameters! foodId is missing.");
         setLoading(false);
         return;
       }
@@ -122,26 +32,51 @@ const FoodDetails = () => {
         const foodDocSnap = await getDoc(foodDocRef);
 
         if (foodDocSnap.exists()) {
-          const foodData = foodDocSnap.data();
-          setFoodDetails(foodData);
-
+          setFoodDetails(foodDocSnap.data());
           const restaurantDocRef = doc(db, `restaurants/${restaurantId}`);
           const restaurantDocSnap = await getDoc(restaurantDocRef);
-
           if (restaurantDocSnap.exists()) {
             setRestaurantDetails(restaurantDocSnap.data());
           }
         } else {
-          console.error("Food item not found");
+          console.error("❌ Food document not found.");
         }
       } catch (error) {
-        console.error("Error fetching data: ", error);
+        console.error("🔥 Error fetching data:", error);
       }
       setLoading(false);
     };
 
     fetchFoodDetails();
   }, [restaurantId, foodId]);
+
+  const handleReserve = async () => {
+    if (!foodDetails) return;
+    if (!auth.currentUser) {
+      toast.error("You must be logged in to reserve food!");
+      return;
+    }
+
+    try {
+      const ngoId = auth.currentUser.uid;
+      const timestamp = Date.now();
+      const formattedFoodName = foodDetails.foodItem.replace(/\s+/g, "_"); // Replace spaces with underscores
+      const reservationId = `reserved_${formattedFoodName}_${timestamp}`;
+
+      const reservationData = {
+        ...foodDetails,
+        reservedBy: ngoId,
+        reservationTime: new Date().toISOString()
+      };
+
+      await setDoc(doc(db, `ngos/${ngoId}/food_reservations/${reservationId}`), reservationData);
+
+      toast.success("Food reserved successfully!", { position: "top-right" });
+    } catch (error) {
+      console.error("🔥 Error reserving food:", error);
+      toast.error("Reservation failed! Try again.");
+    }
+  };
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
@@ -200,9 +135,12 @@ const FoodDetails = () => {
         <p className="text-yellow-600">Please ensure timely pickup to avoid food wastage.</p>
       </Card>
 
-      <Button className="mt-6 bg-connect-green-500 hover:bg-connect-green-600 w-full">Reserve Now</Button>
+      <Button className="mt-6 bg-connect-green-500 hover:bg-connect-green-600 w-full" onClick={handleReserve}>
+        Reserve Now
+      </Button>
     </div>
   );
 };
 
 export default FoodDetails;
+
