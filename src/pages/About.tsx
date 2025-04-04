@@ -37,18 +37,18 @@ const About = () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h3 className="font-medium">Jane Doe</h3>
-              <p className="text-sm text-gray-600">Founder & CEO</p>
+              <h4 className="font-medium">Devansh Rathore</h4>
+              <p className="text-sm text-gray-600"></p>
             </div>
             <div className="text-center">
               <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h3 className="font-medium">John Smith</h3>
-              <p className="text-sm text-gray-600">CTO</p>
+              <h4 className="font-medium">Tiya Mehta</h4>
+              <p className="text-sm text-gray-600"></p>
             </div>
             <div className="text-center">
               <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h3 className="font-medium">Sarah Johnson</h3>
-              <p className="text-sm text-gray-600">Community Director</p>
+              <h4 className="font-medium">Shreya Gupta </h4>
+              <p className="text-sm text-gray-600"></p>
             </div>
           </div>
         </div>
