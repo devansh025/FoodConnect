@@ -17,12 +17,12 @@ const HowItWorks = () => {
               <span className="text-connect-green-600 font-bold text-xl">1</span>
             </div>
             <h3 className="text-xl font-semibold mb-3">Restaurants List Food</h3>
-            <p className="text-gray-600">Restaurants list their surplus food with details about quantity, type, and pickup time.</p>
+            <p className="text-gray-600">Restaurants list their surplus food with details about quantity, type, and expiry time.</p>
           </div>
           
           <div className="bg-white p-6 rounded-lg shadow-md">
             <div className="w-12 h-12 bg-connect-green-100 rounded-full flex items-center justify-center mb-4">
-              <span className="text-connect-green-600 font-bold text-xl">2</span>
+              <span className="text-connect-green-500 font-bold text-xl">2</span>
             </div>
             <h3 className="text-xl font-semibold mb-3">NGOs Browse & Reserve</h3>
             <p className="text-gray-600">Local NGOs browse available food donations and reserve what they need for their communities.</p>
