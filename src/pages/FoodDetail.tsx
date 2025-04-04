@@ -1,382 +1,141 @@
 
-// import { useState } from "react";
-// import { useParams, Link } from "react-router-dom";
-// import { Button } from "@/components/ui/button";
-// import { Card, CardContent } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-// import { Textarea } from "@/components/ui/textarea";
-// import { useToast } from "@/hooks/use-toast";
-// import { Clock, MapPin, Utensils, User, Store, ChevronLeft, Calendar, Phone, MessageSquare, Check, AlertTriangle } from "lucide-react";
-// import { motion } from "framer-motion";
-
-// // Placeholder data (in a real app, this would come from an API)
-// const foodItems = [
-//   {
-//     id: "1",
-//     title: "Fresh Pasta & Salad",
-//     restaurant: "Bella Italian",
-//     restaurantInfo: {
-//       name: "Bella Italian",
-//       address: "123 Main St, City Center",
-//       contact: "+1 (555) 123-4567",
-//       owner: "Marco Rossi",
-//     },
-//     location: "123 Main St, City Center",
-//     description: "Delicious pasta with homemade tomato sauce and fresh garden salad with balsamic dressing. Perfect for a quick meal or event. Contains gluten and dairy. Food was prepared today and has been properly stored. We have more than we can use and want to make sure it goes to people who can enjoy it!",
-//     quantity: "5 servings",
-//     expiry: "Today, 8:00 PM",
-//     category: "Italian",
-//     postedAt: "Today, 2:30 PM",
-//     dietaryInfo: ["Contains gluten", "Contains dairy"],
-//     imageUrl: "https://images.unsplash.com/photo-1546549032-9571cd6b27df?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-//   },
-//   {
-//     id: "2",
-//     title: "Vegetable Curry",
-//     restaurant: "Spice Garden",
-//     restaurantInfo: {
-//       name: "Spice Garden",
-//       address: "45 Park Ave, East Side",
-//       contact: "+1 (555) 987-6543",
-//       owner: "Priya Sharma",
-//     },
-//     location: "45 Park Ave, East Side",
-//     description: "Aromatic vegetable curry with basmati rice. Mild spice level, suitable for most palates. Vegan-friendly and made with fresh, local ingredients. Can be easily reheated. We made too much for our dinner service and would hate to see it go to waste.",
-//     quantity: "3 kg",
-//     expiry: "Today, 9:30 PM",
-//     category: "Indian",
-//     postedAt: "Today, 3:45 PM",
-//     dietaryInfo: ["Vegan", "Gluten-free"],
-//     imageUrl: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-//   },
-//   // Add more food items as in the Browse page
-// ];
-
-// const FoodDetail = () => {
-//   const { id } = useParams<{ id: string }>();
-//   const { toast } = useToast();
-//   const [reservationNotes, setReservationNotes] = useState("");
-//   const [isReserving, setIsReserving] = useState(false);
-//   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
-//   // Find the food item by ID
-//   const foodItem = foodItems.find((item) => item.id === id);
-  
-//   if (!foodItem) {
-//     return (
-//       <div className="max-w-7xl mx-auto px-6 md:px-10 py-20 text-center">
-//         <h2 className="text-2xl font-bold mb-4">Food Item Not Found</h2>
-//         <p className="mb-6">The food item you're looking for is not available or has been removed.</p>
-//         <Button asChild>
-//           <Link to="/browse">Back to Browse</Link>
-//         </Button>
-//       </div>
-//     );
-//   }
-  
-//   const handleReserve = () => {
-//     setIsReserving(true);
-    
-//     // Simulate API call
-//     setTimeout(() => {
-//       setIsReserving(false);
-//       setIsDialogOpen(false);
-      
-//       toast({
-//         title: "Reservation Successful!",
-//         description: "You've successfully reserved this food. The restaurant has been notified.",
-//         variant: "default",
-//       });
-//     }, 1500);
-//   };
-  
-//   return (
-//     <div className="max-w-7xl mx-auto px-6 md:px-10 py-10">
-//       <div className="mb-6">
-//         <Button asChild variant="ghost" className="mb-4">
-//           <Link to="/browse" className="flex items-center">
-//             <ChevronLeft size={16} className="mr-1" />
-//             Back to Browse
-//           </Link>
-//         </Button>
-//       </div>
-      
-//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-//         <div className="lg:col-span-2">
-//           <motion.div
-//             initial={{ opacity: 0, y: 20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ duration: 0.4 }}
-//             className="space-y-8"
-//           >
-//             <div className="relative h-[300px] md:h-[400px] w-full rounded-xl overflow-hidden">
-//               <img
-//                 src={foodItem.imageUrl}
-//                 alt={foodItem.title}
-//                 className="absolute inset-0 w-full h-full object-cover"
-//               />
-//               <div className="absolute top-4 right-4">
-//                 <Badge className="bg-connect-green-500 text-white">{foodItem.category}</Badge>
-//               </div>
-//             </div>
-            
-//             <div>
-//               <h1 className="text-3xl font-bold mb-2">{foodItem.title}</h1>
-//               <div className="flex items-center text-muted-foreground mb-4">
-//                 <Store size={16} className="mr-1" />
-//                 <span>{foodItem.restaurant}</span>
-//               </div>
-              
-//               <p className="text-lg mb-6">{foodItem.description}</p>
-              
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-//                 <Card>
-//                   <CardContent className="p-4">
-//                     <div className="flex items-center mb-3">
-//                       <Utensils className="h-5 w-5 mr-2 text-connect-green-500" />
-//                       <h3 className="font-medium">Quantity</h3>
-//                     </div>
-//                     <p>{foodItem.quantity}</p>
-//                   </CardContent>
-//                 </Card>
-                
-//                 <Card>
-//                   <CardContent className="p-4">
-//                     <div className="flex items-center mb-3">
-//                       <Clock className="h-5 w-5 mr-2 text-connect-green-500" />
-//                       <h3 className="font-medium">Expires At</h3>
-//                     </div>
-//                     <p>{foodItem.expiry}</p>
-//                   </CardContent>
-//                 </Card>
-                
-//                 <Card>
-//                   <CardContent className="p-4">
-//                     <div className="flex items-center mb-3">
-//                       <MapPin className="h-5 w-5 mr-2 text-connect-green-500" />
-//                       <h3 className="font-medium">Pickup Location</h3>
-//                     </div>
-//                     <p>{foodItem.location}</p>
-//                   </CardContent>
-//                 </Card>
-                
-//                 <Card>
-//                   <CardContent className="p-4">
-//                     <div className="flex items-center mb-3">
-//                       <Calendar className="h-5 w-5 mr-2 text-connect-green-500" />
-//                       <h3 className="font-medium">Posted</h3>
-//                     </div>
-//                     <p>{foodItem.postedAt}</p>
-//                   </CardContent>
-//                 </Card>
-//               </div>
-              
-//               {foodItem.dietaryInfo && foodItem.dietaryInfo.length > 0 && (
-//                 <div className="mb-6">
-//                   <h3 className="font-medium mb-2">Dietary Information</h3>
-//                   <div className="flex flex-wrap gap-2">
-//                     {foodItem.dietaryInfo.map((info, index) => (
-//                       <Badge key={index} variant="outline" className="bg-gray-100 text-gray-800 hover:bg-gray-200">
-//                         {info}
-//                       </Badge>
-//                     ))}
-//                   </div>
-//                 </div>
-//               )}
-//             </div>
-//           </motion.div>
-//         </div>
-        
-//         <div className="lg:col-span-1">
-//           <motion.div
-//             initial={{ opacity: 0, y: 20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             transition={{ duration: 0.4, delay: 0.2 }}
-//           >
-//             <Card className="sticky top-24">
-//               <CardContent className="p-6">
-//                 <h3 className="text-xl font-semibold mb-4">Restaurant Information</h3>
-                
-//                 <div className="space-y-4 mb-6">
-//                   <div className="flex items-start">
-//                     <Store className="h-5 w-5 mr-3 mt-0.5 text-connect-green-500" />
-//                     <div>
-//                       <p className="font-medium">{foodItem.restaurantInfo.name}</p>
-//                       <p className="text-sm text-muted-foreground">{foodItem.restaurantInfo.address}</p>
-//                     </div>
-//                   </div>
-                  
-//                   <div className="flex items-start">
-//                     <User className="h-5 w-5 mr-3 mt-0.5 text-connect-green-500" />
-//                     <div>
-//                       <p className="font-medium">Contact Person</p>
-//                       <p className="text-sm text-muted-foreground">{foodItem.restaurantInfo.owner}</p>
-//                     </div>
-//                   </div>
-                  
-//                   <div className="flex items-start">
-//                     <Phone className="h-5 w-5 mr-3 mt-0.5 text-connect-green-500" />
-//                     <div>
-//                       <p className="font-medium">Phone</p>
-//                       <p className="text-sm text-muted-foreground">{foodItem.restaurantInfo.contact}</p>
-//                     </div>
-//                   </div>
-//                 </div>
-                
-//                 <div className="bg-connect-green-50 dark:bg-connect-green-900/20 p-4 rounded-lg mb-6">
-//                   <div className="flex items-start">
-//                     <AlertTriangle className="h-5 w-5 mr-3 mt-0.5 text-connect-green-600" />
-//                     <div>
-//                       <p className="font-medium">Important Note</p>
-//                       <p className="text-sm text-muted-foreground">
-//                         Please reserve only if you can pick up before the expiry time. This ensures food doesn't go to waste.
-//                       </p>
-//                     </div>
-//                   </div>
-//                 </div>
-                
-//                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-//                   <DialogTrigger asChild>
-//                     <Button className="w-full bg-connect-green-500 hover:bg-connect-green-600">
-//                       Reserve This Food
-//                     </Button>
-//                   </DialogTrigger>
-//                   <DialogContent>
-//                     <DialogHeader>
-//                       <DialogTitle>Reserve Food</DialogTitle>
-//                       <DialogDescription>
-//                         You are about to reserve "{foodItem.title}" from {foodItem.restaurant}.
-//                         Please add any notes for the restaurant.
-//                       </DialogDescription>
-//                     </DialogHeader>
-                    
-//                     <div className="space-y-4 py-4">
-//                       <div className="space-y-2">
-//                         <label htmlFor="notes" className="text-sm font-medium">
-//                           Reservation Notes (Optional)
-//                         </label>
-//                         <Textarea
-//                           id="notes"
-//                           placeholder="Any special instructions for pickup..."
-//                           value={reservationNotes}
-//                           onChange={(e) => setReservationNotes(e.target.value)}
-//                         />
-//                       </div>
-                      
-//                       <div className="bg-gray-50 dark:bg-gray-900 p-3 rounded-md">
-//                         <div className="flex items-start">
-//                           <Check className="h-5 w-5 mr-2 mt-0.5 text-connect-green-500" />
-//                           <p className="text-sm">
-//                             By reserving, you agree to pick up the food before {foodItem.expiry}.
-//                           </p>
-//                         </div>
-//                       </div>
-//                     </div>
-                    
-//                     <DialogFooter>
-//                       <Button
-//                         variant="outline"
-//                         onClick={() => setIsDialogOpen(false)}
-//                         disabled={isReserving}
-//                       >
-//                         Cancel
-//                       </Button>
-//                       <Button
-//                         onClick={handleReserve}
-//                         disabled={isReserving}
-//                         className="bg-connect-green-500 hover:bg-connect-green-600"
-//                       >
-//                         {isReserving ? "Reserving..." : "Confirm Reservation"}
-//                       </Button>
-//                     </DialogFooter>
-//                   </DialogContent>
-//                 </Dialog>
-                
-//                 <div className="mt-4">
-//                   <Button variant="outline" className="w-full" asChild>
-//                     <Link to={`/message/${foodItem.id}`} className="flex items-center justify-center">
-//                       <MessageSquare className="h-4 w-4 mr-2" />
-//                       Message Restaurant
-//                     </Link>
-//                   </Button>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           </motion.div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default FoodDetail;
-
-
-
-
-
 
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "@/firebase";
-import { Clock, MapPin, Utensils } from "lucide-react";
+import { doc, getDoc, collection, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { db } from "../firebase";
+import { Card } from "@/components/ui/card";
+import { Clock, MapPin, Utensils, Calendar } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-interface FoodItem {
-  id: string;
-  title: string;
-  restaurant: string;
-  location: string;
-  description: string;
-  quantity: string;
-  expiry: string;
-  category: string;
-}
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FoodDetails = () => {
-  const { id } = useParams();
-  const [food, setFood] = useState<FoodItem | null>(null);
+  const { restaurantId, foodId } = useParams();
+  const [foodDetails, setFoodDetails] = useState(null);
+  const [restaurantDetails, setRestaurantDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const auth = getAuth();
 
   useEffect(() => {
-    const fetchFood = async () => {
-      if (!id) return;
-      const foodRef = doc(db, "food_donations", id);
-      const foodSnap = await getDoc(foodRef);
-
-      if (foodSnap.exists()) {
-        setFood({ id: foodSnap.id, ...foodSnap.data() } as FoodItem);
+    const fetchFoodDetails = async () => {
+      if (!foodId) {
+        console.error("❌ Invalid URL parameters! foodId is missing.");
+        setLoading(false);
+        return;
       }
+
+      try {
+        const foodDocRef = doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`);
+        const foodDocSnap = await getDoc(foodDocRef);
+
+        if (foodDocSnap.exists()) {
+          setFoodDetails(foodDocSnap.data());
+          const restaurantDocRef = doc(db, `restaurants/${restaurantId}`);
+          const restaurantDocSnap = await getDoc(restaurantDocRef);
+          if (restaurantDocSnap.exists()) {
+            setRestaurantDetails(restaurantDocSnap.data());
+          }
+        } else {
+          console.error("❌ Food document not found.");
+        }
+      } catch (error) {
+        console.error("🔥 Error fetching data:", error);
+      }
+      setLoading(false);
     };
 
-    fetchFood();
-  }, [id]);
+    fetchFoodDetails();
+  }, [restaurantId, foodId]);
 
-  if (!food) return <p className="text-gray-500">Food details not found.</p>;
+  const handleReserve = async () => {
+    if (!foodDetails) return;
+    if (!auth.currentUser) {
+      toast.error("You must be logged in to reserve food!");
+      return;
+    }
+
+    try {
+      const ngoId = auth.currentUser.uid;
+      const timestamp = Date.now();
+      const formattedFoodName = foodDetails.foodItem.replace(/\s+/g, "_"); // Replace spaces with underscores
+      const reservationId = `reserved_${formattedFoodName}_${timestamp}`;
+
+      const reservationData = {
+        ...foodDetails,
+        reservedBy: ngoId,
+        reservationTime: new Date().toISOString()
+      };
+
+      await setDoc(doc(db, `ngos/${ngoId}/food_reservations/${reservationId}`), reservationData);
+
+      toast.success("Food reserved successfully!", { position: "top-right" });
+    } catch (error) {
+      console.error("🔥 Error reserving food:", error);
+      toast.error("Reservation failed! Try again.");
+    }
+  };
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  }
+
+  if (!foodDetails || !restaurantDetails) {
+    return <div className="text-center text-red-500">Food details not found.</div>;
+  }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <h2 className="text-2xl font-semibold">{food.title}</h2>
-      <p className="text-gray-600">{food.restaurant}</p>
-      <p className="mt-4">{food.description}</p>
+    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <div className="flex justify-between items-center mb-1">
+        <h5 className="text-3xl font-bold">{foodDetails.foodItem}</h5>
+        <Badge
+          className={foodDetails.category === "Non-Veg" ? "bg-red-500 hover:bg-red-600" : "bg-connect-green-500 hover:bg-connect-green-600"}
+        >
+          {foodDetails.category}
+        </Badge>
+      </div>
+      <p className="text-sm text-gray-500 mb-4">{restaurantDetails.name}</p>
+      <p className="text-gray-700 mb-4">{foodDetails.description}</p>
 
-      <div className="mt-4 space-y-2">
-        <div className="flex items-center">
-          <Utensils className="h-5 w-5 mr-2 text-muted-foreground" />
-          <span>{food.quantity}</span>
-        </div>
-        <div className="flex items-center">
-          <Clock className="h-5 w-5 mr-2 text-muted-foreground" />
-          <span>Expires: {food.expiry}</span>
-        </div>
-        <div className="flex items-center">
-          <MapPin className="h-5 w-5 mr-2 text-muted-foreground" />
-          <span>{food.location}</span>
-        </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <Card className="p-4 text-center">
+          <Utensils className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+          <p className="text-sm font-semibold">Quantity</p>
+          <p className="text-gray-600">{foodDetails.quantity}</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <Clock className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+          <p className="text-sm font-semibold">Expires At</p>
+          <p className="text-gray-600">{foodDetails.expiry}</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <MapPin className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+          <p className="text-sm font-semibold">Pickup Location</p>
+          <p className="text-gray-600">{foodDetails.location}</p>
+        </Card>
+        <Card className="p-4 text-center">
+          <Calendar className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+          <p className="text-sm font-semibold">Posted</p>
+          <p className="text-gray-600">{foodDetails.postedAt}</p>
+        </Card>
       </div>
 
-      <Button className="mt-6 bg-connect-green-500 hover:bg-connect-green-600">
+      <Card className="p-4 mb-6">
+        <h3 className="text-xl font-semibold mb-2">Restaurant Information</h3>
+        <p><strong>Name:</strong> {restaurantDetails.name}</p>
+        <p><strong>Address:</strong> {restaurantDetails.address}</p>
+        <p><strong>Contact Person:</strong> {restaurantDetails.contactPerson}</p>
+        <p><strong>Phone:</strong> {restaurantDetails.phone}</p>
+      </Card>
+
+      <Card className="p-4 bg-yellow-100 border-l-4 border-yellow-500">
+        <h3 className="text-lg font-semibold text-yellow-700">Important Note</h3>
+        <p className="text-yellow-600">Please ensure timely pickup to avoid food wastage.</p>
+      </Card>
+
+      <Button className="mt-6 bg-connect-green-500 hover:bg-connect-green-600 w-full" onClick={handleReserve}>
         Reserve Now
       </Button>
     </div>
@@ -384,8 +143,4 @@ const FoodDetails = () => {
 };
 
 export default FoodDetails;
-
-
-
-
 
