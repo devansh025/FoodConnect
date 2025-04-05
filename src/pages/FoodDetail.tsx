@@ -9,7 +9,8 @@
 // import { Clock, MapPin, Utensils, Calendar } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 // import { Button } from "@/components/ui/button";
-// import { toast } from "react-toastify";
+// import Swal from "sweetalert2";
+// import "sweetalert2/src/sweetalert2.scss"; // if you're using SCSS
 // import "react-toastify/dist/ReactToastify.css";
 
 // const FoodDetails = () => {
@@ -53,28 +54,50 @@
 //   const handleReserve = async () => {
 //     if (!foodDetails) return;
 //     if (!auth.currentUser) {
-//       toast.error("You must be logged in to reserve food!");
+//       Swal.fire({
+//         icon: "warning",
+//         title: "Login Required!",
+//         text: "You must be logged in to reserve food.",
+//         confirmButtonColor: "#22c55e",
+//       });
 //       return;
 //     }
 
 //     try {
 //       const ngoId = auth.currentUser.uid;
 //       const timestamp = Date.now();
-//       const formattedFoodName = foodDetails.foodItem.replace(/\s+/g, "_"); // Replace spaces with underscores
+//       const formattedFoodName = foodDetails.foodItem.replace(/\s+/g, "_");
 //       const reservationId = `reserved_${formattedFoodName}_${timestamp}`;
 
 //       const reservationData = {
 //         ...foodDetails,
 //         reservedBy: ngoId,
-//         reservationTime: new Date().toISOString()
+//         reservationTime: new Date().toISOString(),
 //       };
 
 //       await setDoc(doc(db, `ngos/${ngoId}/food_reservations/${reservationId}`), reservationData);
 
-//       toast.success("Food reserved successfully!", { position: "top-right" });
+//       // ✅ SweetAlert2 Success Popup with custom style
+//       Swal.fire({
+//         title: "🍽️ Reserved!",
+//         text: "You have successfully reserved the food.",
+//         icon: "success",
+//         confirmButtonText: "Yay!",
+//         confirmButtonColor: "#22c55e",
+//         background: "#ffffff",
+//         color: "#14532d",
+//         customClass: {
+//           popup: "rounded-2xl shadow-lg p-6",
+//         },
+//       });
 //     } catch (error) {
 //       console.error("🔥 Error reserving food:", error);
-//       toast.error("Reservation failed! Try again.");
+//       Swal.fire({
+//         icon: "error",
+//         title: "Reservation Failed",
+//         text: "Please try again later.",
+//         confirmButtonColor: "#22c55e",
+//       });
 //     }
 //   };
 
@@ -91,7 +114,11 @@
 //       <div className="flex justify-between items-center mb-1">
 //         <h5 className="text-3xl font-bold">{foodDetails.foodItem}</h5>
 //         <Badge
-//           className={foodDetails.category === "Non-Veg" ? "bg-red-500 hover:bg-red-600" : "bg-connect-green-500 hover:bg-connect-green-600"}
+//           className={
+//             foodDetails.category === "Non-Veg"
+//               ? "bg-red-500 hover:bg-red-600"
+//               : "bg-connect-green-500 hover:bg-connect-green-600"
+//           }
 //         >
 //           {foodDetails.category}
 //         </Badge>
@@ -124,18 +151,31 @@
 
 //       <Card className="p-4 mb-6">
 //         <h3 className="text-xl font-semibold mb-2">Restaurant Information</h3>
-//         <p><strong>Name:</strong> {restaurantDetails.name}</p>
-//         <p><strong>Address:</strong> {restaurantDetails.address}</p>
-//         <p><strong>Contact Person:</strong> {restaurantDetails.contactPerson}</p>
-//         <p><strong>Phone:</strong> {restaurantDetails.phone}</p>
+//         <p>
+//           <strong>Name:</strong> {restaurantDetails.name}
+//         </p>
+//         <p>
+//           <strong>Address:</strong> {restaurantDetails.address}
+//         </p>
+//         <p>
+//           <strong>Contact Person:</strong> {restaurantDetails.contactPerson}
+//         </p>
+//         <p>
+//           <strong>Phone:</strong> {restaurantDetails.phone}
+//         </p>
 //       </Card>
 
 //       <Card className="p-4 bg-yellow-100 border-l-4 border-yellow-500">
 //         <h3 className="text-lg font-semibold text-yellow-700">Important Note</h3>
-//         <p className="text-yellow-600">Please ensure timely pickup to avoid food wastage.</p>
+//         <p className="text-yellow-600">
+//           Please ensure timely pickup to avoid food wastage.
+//         </p>
 //       </Card>
 
-//       <Button className="mt-6 bg-connect-green-500 hover:bg-connect-green-600 w-full" onClick={handleReserve}>
+//       <Button
+//         className="mt-6 bg-connect-green-500 hover:bg-connect-green-600 w-full"
+//         onClick={handleReserve}
+//       >
 //         Reserve Now
 //       </Button>
 //     </div>
