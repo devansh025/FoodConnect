@@ -1,69 +1,54 @@
-# Welcome to your Lovable project
+# 🍽️ Food Connect
 
-## Project info
+Welcome to **Food Connect**, a platform that connects restaurants with NGOs to reduce food waste by making excess food donations accessible and reservable.
 
-**URL**: https://lovable.dev/projects/6c71ae99-a817-47dd-9b0a-d7eea23c29a2
+---
 
-## How can I edit this code?
+## 🌐 Live Website
 
-There are several ways of editing your application.
+👉 [https://foodconnect-fcdd2.web.app](https://foodconnect-fcdd2.web.app)
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6c71ae99-a817-47dd-9b0a-d7eea23c29a2) and start prompting.
+## 📖 About the Project
 
-Changes made via Lovable will be committed automatically to this repo.
+**Food Connect** bridges the gap between food providers and distributors. Restaurants can donate food through the platform, and NGOs can browse, reserve, and distribute that food to those in need.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🚀 Tech Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+This project uses modern web technologies and tools:
 
-Follow these steps:
+- ⚡ [Vite](https://vitejs.dev/)
+- ⚛️ [React](https://reactjs.org/)
+- 🧠 TypeScript
+- 💅 [Tailwind CSS](https://tailwindcss.com/)
+- 🎨 [shadcn/ui](https://ui.shadcn.com/)
+- 🔥 [Firebase](https://firebase.google.com/)
+  - Hosting
+  - Authentication
+  - Firestore Database
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🧑‍💻 Getting Started
 
-# Step 3: Install the necessary dependencies.
-npm i
+Follow these steps to run the project locally.
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### ✅ Prerequisites
+
+- [Node.js](https://nodejs.org/) and npm installed (recommended: install via [nvm](https://github.com/nvm-sh/nvm))
+
+### 📦 Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/yourusername/FoodConnect.git
+cd FoodConnect
+
+# 2. Install dependencies
+npm install
+
+# 3. Start development server
 npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/6c71ae99-a817-47dd-9b0a-d7eea23c29a2) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
