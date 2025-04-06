@@ -179,7 +179,6 @@
 
 
 
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -192,7 +191,7 @@ import {
 import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { Card } from "@/components/ui/card";
-import { Clock, MapPin, Utensils, Calendar } from "lucide-react";
+import { Clock, Utensils, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
@@ -338,7 +337,7 @@ const FoodDetails = () => {
       <p className="text-sm text-gray-500 mb-4">{restaurantDetails.name}</p>
       <p className="text-gray-700 mb-4">{foodDetails.description}</p>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Card className="p-4 text-center">
           <Utensils className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
           <p className="text-sm font-semibold">Quantity</p>
@@ -346,19 +345,28 @@ const FoodDetails = () => {
         </Card>
         <Card className="p-4 text-center">
           <Clock className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm font-semibold">Expires At</p>
-          <p className="text-gray-600">{foodDetails.expiry}</p>
+          <p className="text-sm font-semibold">Expires After</p>
+          <p className="text-gray-600">{foodDetails.expiry} hrs</p>
         </Card>
         <Card className="p-4 text-center">
-          <MapPin className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm font-semibold">Pickup Location</p>
-          <p className="text-gray-600">{foodDetails.location}</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Calendar className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
-          <p className="text-sm font-semibold">Posted</p>
-          <p className="text-gray-600">{foodDetails.postedAt}</p>
-        </Card>
+  <Calendar className="h-6 w-6 mx-auto text-muted-foreground mb-2" />
+  <p className="text-sm font-semibold">Posted at</p>
+  {foodDetails.createdAt ? (
+    <p className="text-gray-600">
+      {foodDetails.createdAt.toDate().toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      })},{" "}
+      {foodDetails.createdAt
+        .toDate()
+        .toLocaleDateString("en-GB")
+        .replace(/\//g, "-")}
+    </p>
+  ) : (
+    <p className="text-gray-400 italic">Not Available</p>
+  )}
+</Card>
+
       </div>
 
       <Card className="p-4 mb-6">
