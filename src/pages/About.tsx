@@ -31,27 +31,36 @@ const About = () => {
             across the country, making a meaningful difference in our communities.
           </p>
         </div>
-        
         <div className="bg-gray-50 p-8 rounded-lg mb-16">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Our Team</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h4 className="font-medium">Devansh Rathore</h4>
-              <p className="text-sm text-gray-600"></p>
-            </div>
-            <div className="text-center">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h4 className="font-medium">Tiya Mehta</h4>
-              <p className="text-sm text-gray-600"></p>
-            </div>
-            <div className="text-center">
-              <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h4 className="font-medium">Shreya Gupta </h4>
-              <p className="text-sm text-gray-600"></p>
-            </div>
-          </div>
-        </div>
+  <h2 className="text-2xl font-semibold mb-6 text-center">Our Team</h2>
+  <div className="grid md:grid-cols-3 gap-8">
+    <div className="text-center">
+      <img
+        src="/images/devansh.jpg"
+        alt="Devansh Rathore"
+        className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+      />
+      <h4 className="font-medium">Devansh Rathore</h4>
+    </div>
+    <div className="text-center">
+      <img
+        src="/images/tiya.jpg"
+        alt="Tiya Mehta"
+        className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+      />
+      <h4 className="font-medium">Tiya Mehta</h4>
+    </div>
+    <div className="text-center">
+      <img
+        src="/images/shreya.jpg"
+        alt="Shreya Gupta"
+        className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+      />
+      <h4 className="font-medium">Shreya Gupta</h4>
+    </div>
+  </div>
+</div>
+
       </motion.div>
     </div>
   );
