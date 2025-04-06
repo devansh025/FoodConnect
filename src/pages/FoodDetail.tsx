@@ -1,8 +1,6 @@
-
-
 // import { useEffect, useState } from "react";
 // import { useParams } from "react-router-dom";
-// import { doc, getDoc, collection, setDoc } from "firebase/firestore";
+// import { doc, getDoc, deleteDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 // import { getAuth } from "firebase/auth";
 // import { db } from "../firebase";
 // import { Card } from "@/components/ui/card";
@@ -10,8 +8,7 @@
 // import { Badge } from "@/components/ui/badge";
 // import { Button } from "@/components/ui/button";
 // import Swal from "sweetalert2";
-// import "sweetalert2/src/sweetalert2.scss"; // if you're using SCSS
-// import "react-toastify/dist/ReactToastify.css";
+// import "sweetalert2/src/sweetalert2.scss";
 
 // const FoodDetails = () => {
 //   const { restaurantId, foodId } = useParams();
@@ -22,25 +19,24 @@
 
 //   useEffect(() => {
 //     const fetchFoodDetails = async () => {
-//       if (!foodId) {
-//         console.error("❌ Invalid URL parameters! foodId is missing.");
+//       if (!restaurantId || !foodId) {
+//         console.error("❌ Missing restaurantId or foodId");
 //         setLoading(false);
 //         return;
 //       }
 
 //       try {
-//         const foodDocRef = doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`);
-//         const foodDocSnap = await getDoc(foodDocRef);
+//         const foodRef = doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`);
+//         const foodSnap = await getDoc(foodRef);
 
-//         if (foodDocSnap.exists()) {
-//           setFoodDetails(foodDocSnap.data());
-//           const restaurantDocRef = doc(db, `restaurants/${restaurantId}`);
-//           const restaurantDocSnap = await getDoc(restaurantDocRef);
-//           if (restaurantDocSnap.exists()) {
-//             setRestaurantDetails(restaurantDocSnap.data());
-//           }
+//         if (foodSnap.exists()) {
+//           setFoodDetails(foodSnap.data());
+
+//           const restRef = doc(db, `restaurants/${restaurantId}`);
+//           const restSnap = await getDoc(restRef);
+//           if (restSnap.exists()) setRestaurantDetails(restSnap.data());
 //         } else {
-//           console.error("❌ Food document not found.");
+//           console.error("❌ Food not found");
 //         }
 //       } catch (error) {
 //         console.error("🔥 Error fetching data:", error);
@@ -52,8 +48,7 @@
 //   }, [restaurantId, foodId]);
 
 //   const handleReserve = async () => {
-//     if (!foodDetails) return;
-//     if (!auth.currentUser) {
+//     if (!auth.currentUser || !foodDetails) {
 //       Swal.fire({
 //         icon: "warning",
 //         title: "Login Required!",
@@ -66,8 +61,8 @@
 //     try {
 //       const ngoId = auth.currentUser.uid;
 //       const timestamp = Date.now();
-//       const formattedFoodName = foodDetails.foodItem.replace(/\s+/g, "_");
-//       const reservationId = `reserved_${formattedFoodName}_${timestamp}`;
+//       const formattedName = foodDetails.foodItem.replace(/\s+/g, "_");
+//       const reservationId = `reserved_${formattedName}_${timestamp}`;
 
 //       const reservationData = {
 //         ...foodDetails,
@@ -75,14 +70,24 @@
 //         reservationTime: new Date().toISOString(),
 //       };
 
+//       // Step 1: Mark the food as reserved (this triggers security rule check)
+//       await updateDoc(doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`), {
+//         reserved_by: ngoId,
+//         reserved_at: serverTimestamp(),
+//       });
+
+//       // Step 2: Add to NGO's reservation subcollection
 //       await setDoc(doc(db, `ngos/${ngoId}/food_reservations/${reservationId}`), reservationData);
 
-//       // ✅ SweetAlert2 Success Popup with custom style
+//       // Step 3: Delete from original food_donations list
+//       await deleteDoc(doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`));
+
+//       // Success Alert
 //       Swal.fire({
-//         title: "🍽️ Reserved!",
+//         title: "🍽 Reserved!",
 //         text: "You have successfully reserved the food.",
 //         icon: "success",
-//         confirmButtonText: "Yay!",
+//         confirmButtonText: "OK",
 //         confirmButtonColor: "#22c55e",
 //         background: "#ffffff",
 //         color: "#14532d",
@@ -91,23 +96,19 @@
 //         },
 //       });
 //     } catch (error) {
-//       console.error("🔥 Error reserving food:", error);
+//       console.error("🔥 Reservation Error:", error);
 //       Swal.fire({
 //         icon: "error",
 //         title: "Reservation Failed",
-//         text: "Please try again later.",
+//         text: error?.message || "Please try again later.",
 //         confirmButtonColor: "#22c55e",
 //       });
 //     }
 //   };
 
-//   if (loading) {
-//     return <div className="flex justify-center items-center h-screen">Loading...</div>;
-//   }
-
-//   if (!foodDetails || !restaurantDetails) {
-//     return <div className="text-center text-red-500">Food details not found.</div>;
-//   }
+//   if (loading) return <div className="text-center mt-10">Loading...</div>;
+//   if (!foodDetails || !restaurantDetails)
+//     return <div className="text-red-500 text-center">Food details not found.</div>;
 
 //   return (
 //     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -150,23 +151,15 @@
 //       </div>
 
 //       <Card className="p-4 mb-6">
-//         <h3 className="text-xl font-semibold mb-2">Restaurant Information</h3>
-//         <p>
-//           <strong>Name:</strong> {restaurantDetails.name}
-//         </p>
-//         <p>
-//           <strong>Address:</strong> {restaurantDetails.address}
-//         </p>
-//         <p>
-//           <strong>Contact Person:</strong> {restaurantDetails.contactPerson}
-//         </p>
-//         <p>
-//           <strong>Phone:</strong> {restaurantDetails.phone}
-//         </p>
+//         <h3 className="text-xl font-semibold mb-2">Restaurant Info</h3>
+//         <p><strong>Name:</strong> {restaurantDetails.name}</p>
+//         <p><strong>Address:</strong> {restaurantDetails.address}</p>
+//         <p><strong>Contact Person:</strong> {restaurantDetails.contactPerson}</p>
+//         <p><strong>Phone:</strong> {restaurantDetails.phone}</p>
 //       </Card>
 
 //       <Card className="p-4 bg-yellow-100 border-l-4 border-yellow-500">
-//         <h3 className="text-lg font-semibold text-yellow-700">Important Note</h3>
+//         <h3 className="text-lg font-semibold text-yellow-700">Note</h3>
 //         <p className="text-yellow-600">
 //           Please ensure timely pickup to avoid food wastage.
 //         </p>
@@ -184,9 +177,18 @@
 
 // export default FoodDetails;
 
+
+
+
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { doc, getDoc, collection, setDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  runTransaction,
+  setDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { db } from "../firebase";
 import { Card } from "@/components/ui/card";
@@ -194,8 +196,7 @@ import { Clock, MapPin, Utensils, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Swal from "sweetalert2";
-import "sweetalert2/src/sweetalert2.scss"; // if you're using SCSS
-import "react-toastify/dist/ReactToastify.css";
+import "sweetalert2/src/sweetalert2.scss";
 
 const FoodDetails = () => {
   const { restaurantId, foodId } = useParams();
@@ -206,25 +207,27 @@ const FoodDetails = () => {
 
   useEffect(() => {
     const fetchFoodDetails = async () => {
-      if (!foodId) {
-        console.error("❌ Invalid URL parameters! foodId is missing.");
+      if (!restaurantId || !foodId) {
+        console.error("❌ Missing restaurantId or foodId");
         setLoading(false);
         return;
       }
 
       try {
-        const foodDocRef = doc(db, `restaurants/${restaurantId}/food_donations/${foodId}`);
-        const foodDocSnap = await getDoc(foodDocRef);
+        const foodRef = doc(
+          db,
+          `restaurants/${restaurantId}/food_donations/${foodId}`
+        );
+        const foodSnap = await getDoc(foodRef);
 
-        if (foodDocSnap.exists()) {
-          setFoodDetails(foodDocSnap.data());
-          const restaurantDocRef = doc(db, `restaurants/${restaurantId}`);
-          const restaurantDocSnap = await getDoc(restaurantDocRef);
-          if (restaurantDocSnap.exists()) {
-            setRestaurantDetails(restaurantDocSnap.data());
-          }
+        if (foodSnap.exists()) {
+          setFoodDetails(foodSnap.data());
+
+          const restRef = doc(db, `restaurants/${restaurantId}`);
+          const restSnap = await getDoc(restRef);
+          if (restSnap.exists()) setRestaurantDetails(restSnap.data());
         } else {
-          console.error("❌ Food document not found.");
+          console.error("❌ Food not found");
         }
       } catch (error) {
         console.error("🔥 Error fetching data:", error);
@@ -236,8 +239,7 @@ const FoodDetails = () => {
   }, [restaurantId, foodId]);
 
   const handleReserve = async () => {
-    if (!foodDetails) return;
-    if (!auth.currentUser) {
+    if (!auth.currentUser || !foodDetails) {
       Swal.fire({
         icon: "warning",
         title: "Login Required!",
@@ -247,26 +249,56 @@ const FoodDetails = () => {
       return;
     }
 
+    const ngoId = auth.currentUser.uid;
+    const timestamp = Date.now();
+    const formattedName = foodDetails.foodItem.replace(/\s+/g, "_");
+    const reservationId = `reserved_${formattedName}_${timestamp}`;
+
+    const foodRef = doc(
+      db,
+      `restaurants/${restaurantId}/food_donations/${foodId}`
+    );
+    const ngoReservationRef = doc(
+      db,
+      `ngos/${ngoId}/food_reservations/${reservationId}`
+    );
+
     try {
-      const ngoId = auth.currentUser.uid;
-      const timestamp = Date.now();
-      const formattedFoodName = foodDetails.foodItem.replace(/\s+/g, "_");
-      const reservationId = `reserved_${formattedFoodName}_${timestamp}`;
+      await runTransaction(db, async (transaction) => {
+        const foodSnap = await transaction.get(foodRef);
 
-      const reservationData = {
-        ...foodDetails,
-        reservedBy: ngoId,
-        reservationTime: new Date().toISOString(),
-      };
+        if (!foodSnap.exists()) {
+          throw new Error("Food item already reserved or no longer exists.");
+        }
 
-      await setDoc(doc(db, `ngos/${ngoId}/food_reservations/${reservationId}`), reservationData);
+        const foodData = foodSnap.data();
 
-      // ✅ SweetAlert2 Success Popup with custom style
+        if (foodData.reserved_by) {
+          throw new Error("This food has already been reserved.");
+        }
+
+        // Mark as reserved
+        transaction.update(foodRef, {
+          reserved_by: ngoId,
+          reserved_at: serverTimestamp(),
+        });
+
+        // Add to NGO reservation subcollection
+        transaction.set(ngoReservationRef, {
+          ...foodData,
+          reservedBy: ngoId,
+          reservationTime: new Date().toISOString(),
+        });
+
+        // Delete from original food_donations
+        transaction.delete(foodRef);
+      });
+
       Swal.fire({
-        title: "🍽️ Reserved!",
+        title: "🍽 Reserved!",
         text: "You have successfully reserved the food.",
         icon: "success",
-        confirmButtonText: "Yay!",
+        confirmButtonText: "OK",
         confirmButtonColor: "#22c55e",
         background: "#ffffff",
         color: "#14532d",
@@ -275,23 +307,19 @@ const FoodDetails = () => {
         },
       });
     } catch (error) {
-      console.error("🔥 Error reserving food:", error);
+      console.error("🔥 Reservation Error:", error);
       Swal.fire({
         icon: "error",
         title: "Reservation Failed",
-        text: "Please try again later.",
+        text: error?.message || "Please try again later.",
         confirmButtonColor: "#22c55e",
       });
     }
   };
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
-  if (!foodDetails || !restaurantDetails) {
-    return <div className="text-center text-red-500">Food details not found.</div>;
-  }
+  if (loading) return <div className="text-center mt-10">Loading...</div>;
+  if (!foodDetails || !restaurantDetails)
+    return <div className="text-red-500 text-center">Food details not found.</div>;
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -334,23 +362,15 @@ const FoodDetails = () => {
       </div>
 
       <Card className="p-4 mb-6">
-        <h3 className="text-xl font-semibold mb-2">Restaurant Information</h3>
-        <p>
-          <strong>Name:</strong> {restaurantDetails.name}
-        </p>
-        <p>
-          <strong>Address:</strong> {restaurantDetails.address}
-        </p>
-        <p>
-          <strong>Contact Person:</strong> {restaurantDetails.contactPerson}
-        </p>
-        <p>
-          <strong>Phone:</strong> {restaurantDetails.phone}
-        </p>
+        <h3 className="text-xl font-semibold mb-2">Restaurant Info</h3>
+        <p><strong>Name:</strong> {restaurantDetails.name}</p>
+        <p><strong>Address:</strong> {restaurantDetails.address}</p>
+        <p><strong>Contact Person:</strong> {restaurantDetails.contactPerson}</p>
+        <p><strong>Phone:</strong> {restaurantDetails.phone}</p>
       </Card>
 
       <Card className="p-4 bg-yellow-100 border-l-4 border-yellow-500">
-        <h3 className="text-lg font-semibold text-yellow-700">Important Note</h3>
+        <h3 className="text-lg font-semibold text-yellow-700">Note</h3>
         <p className="text-yellow-600">
           Please ensure timely pickup to avoid food wastage.
         </p>
